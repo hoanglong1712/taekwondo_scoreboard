@@ -48,6 +48,65 @@ class ScoreBoard(Canvas):
         setup_button = Button(self.window, text='Thiết lập',
                               command=self.setupButton)
         setup_button.place(relx=0.47, rely=0.9)
+        ###################################################
+        # start button
+        start_button = Button(self.window, text='Bắt đầu',
+                              command=self.startButton)
+        start_button.place(relx=0.44, rely=0.2)
+
+        # pause button
+        self.pause_button = Button(self.window, text='Tạm dừng',
+                              command=self.pauseButton)
+        self.pause_button.place(relx=0.52, rely=0.2)
+        self.unpaused = True
+
+        ###################################################
+        # count down
+        self.remaining = 120
+        self.time_range = 120
+        self.countdown_label=Label(self, text="0 :00 ", width=8,
+                                   font=("Times", 40),)
+        self.countdown_label.place(relx=0.4, rely=0.04)
+
+        pass
+
+    def countdown(self, remaining=None):
+        if remaining is not None:
+            self.remaining = remaining
+            pass
+        if self.remaining <= 0:
+            self.countdown_label.configure(text="Hết giờ")
+            pass
+        else:
+            if self.unpaused is True:
+                minute = int(self.remaining / 60)
+                seconds = str(self.remaining - minute * 60)
+                if int(seconds) < 10:
+                    seconds = '0' + seconds
+                    pass
+                self.countdown_label.configure(text="%s : %s" % (minute, seconds))
+                self.remaining = self.remaining - 1
+                self.after(1000, self.countdown)
+                pass
+            pass
+
+        pass
+
+    def pauseButton(self):
+        if self.unpaused is True:
+            self.unpaused = False
+            self.pause_button.config(text="Tiếp tục")
+            pass
+        else:
+            self.unpaused = True
+            self.pause_button.config(text="Tạm dừng")
+            self.countdown()
+            pass
+        pass
+
+    def startButton(self):
+        self.unpaused = True
+        self.countdown(self.time_range)
         pass
 
     def setupButton(self):
@@ -57,6 +116,8 @@ class ScoreBoard(Canvas):
         self.blue_label.config(text=str(self.blue))
         self.red_label.config(text=str(self.red))
 
+        self.time_range = simpledialog.askinteger("Thiết lập", "Thêm số giây của trân đấu",
+                                        parent=self.window)
         pass
 
     def put_blue(self):
